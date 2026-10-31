@@ -15,6 +15,11 @@ jobs:
       - name: Install SDK dan NDK
         run: $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;26.1.10909125" "cmake;3.22.1" "platforms;android-34" "build-tools;34.0.0"
       - run: git clone --recursive https://github.com/SciresM/hactool NspExtract/app/src/main/cpp/hactool
+      - name: Patch hactool untuk Android
+        run: |
+          cd NspExtract/app/src/main/cpp/hactool
+          sed -i -E 's/([A-Za-z_.>-]*base_file)\+\+/\1 = (FILE *)((char *)\1 + 1)/g; s/([A-Za-z_.>-]*base_file)--/\1 = (FILE *)((char *)\1 - 1)/g' main.c
+          grep -n "base_file" main.c | head
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.7"
